@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fuel Expense Dashboard - FuelFinder</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-main: #F5F3EE;
+            --bg-sidebar: #FFFFFF;
+            --bg-card: #FFFFFF;
+            --text-primary: #1F2937;
+            --text-secondary: #6B7280;
+            --accent-green: #10B981;
+            --accent-blue: #3B82F6;
+            --accent-orange: #F59E0B;
+            --border: #E5E7EB;
+            --shadow: rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+       .sidebar {
+            width: 240px;
+            background: var(--bg-sidebar);
+            padding: 2rem 1rem;
+            box-shadow: 2px 0 10px var(--shadow);
+            position: fixed;
+            height: 100vh;
+            animation: slideInLeft 0.5s ease;
+        }
+
+        @keyframes slideInLeft {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+       .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 3rem;
+            padding-left: 0.5rem;
+        }
+
+       .nav-item {
+            padding: 0.875rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+       .nav-item:hover {
+            background: var(--bg-main);
+            color: var(--text-primary);
+            transform: translateX(4px);
+        }
+
+       .nav-item.active {
+            background: var(--text-primary);
+            color: #fff;
+        }
+
+        /* Main Content */
+       .main-content {
+            flex: 1;
+            margin-left: 240px;
+            padding: 2rem;
+            animation: fadeIn 0.6s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+       .header {
+            margin-bottom: 2rem;
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+       .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Stats Cards */
+       .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+       .stat-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px var(--shadow);
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            animation: cardPop 0.5s ease backwards;
+        }
+
+       .stat-card:nth-child(1) { animation-delay: 0.1s; }
+       .stat-card:nth-child(2) { animation-delay: 0.2s; }
+       .stat-card:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes cardPop {
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+       .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+       .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+       .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Chart Section */
+       .chart-section {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px var(--shadow);
+            animation: slideUp 0.6s ease 0.4s backwards;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+       .chart-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+       .chart-container {
+            position: relative;
+            height: 280px;
+        }
+
+        /* Recent Activity */
+       .activity-section {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px var(--shadow);
+            animation: slideUp 0.6s ease 0.5s backwards;
+        }
+
+       .activity-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+       .activity-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+       .activity-table thead {
+            background: var(--bg-main);
+        }
+
+       .activity-table th {
+            padding: 0.875rem;
+            text-align: left;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-bottom: 2px solid var(--border);
+        }
+
+       .activity-table td {
+            padding: 1rem 0.875rem;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border);
+        }
+
+       .activity-table tbody tr {
+            transition: all 0.2s ease;
+            animation: fadeInRow 0.4s ease backwards;
+        }
+
+       .activity-table tbody tr:nth-child(1) { animation-delay: 0.6s; }
+       .activity-table tbody tr:nth-child(2) { animation-delay: 0.7s; }
+       .activity-table tbody tr:nth-child(3) { animation-delay: 0.8s; }
+
+        @keyframes fadeInRow {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+       .activity-table tbody tr:hover {
+            background: var(--bg-main);
+            transform: scale(1.01);
+        }
+
+       .activity-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+       .highlight-row {
+            background: #FEF3C7!important;
+            animation: highlightPulse 2s ease;
+        }
+
+        @keyframes highlightPulse {
+            0%, 100% { background: #FEF3C7; }
+            50% { background: #FDE68A; }
+        }
+
+        /* Log Expense Button */
+       .log-expense-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.75rem;
+            background: var(--text-primary);
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+       .log-expense-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+           .sidebar {
+                transform: translateX(-100%);
+                z-index: 1000;
+            }
+
+           .sidebar.active {
+                transform: translateX(0);
+            }
+
+           .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+           .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+           .header h1 {
+                font-size: 1.5rem;
+            }
+
+           .stat-value {
+                font-size: 1.75rem;
+            }
+
+           .activity-table {
+                font-size: 0.85rem;
+            }
+
+           .activity-table th,
+           .activity-table td {
+                padding: 0.75rem 0.5rem;
+            }
+
+           .log-expense-btn {
+                bottom: 1rem;
+                right: 1rem;
+                padding: 0.875rem 1.25rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Menu Toggle for Mobile */
+       .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1001;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.5rem;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+           .menu-toggle {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+
+    <div class="sidebar" id="sidebar">
+        <div class="logo">FuelFinder</div>
+        <div class="nav-item active" onclick="showSection('dashboard')">Dashboard</div>
+        <div class="nav-item" onclick="showSection('expenses')">Expenses</div>
+        <div class="nav-item" onclick="showSection('vehicles')">Vehicles</div>
+        <div class="nav-item" onclick="showSection('reports')">Reports</div>
+        
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>Fuel Expense Dashboard</h1>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Monthly Spend</div>
+                <div class="stat-value" id="totalSpend">₹0.00</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Average Fuel Efficiency</div>
+                <div class="stat-value" id="avgEfficiency">-- MPG</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Last Refill</div>
+                <div class="stat-value" id="lastRefill">--</div>
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <div class="chart-title">Fuel Cost Trends</div>
+            <div class="chart-container">
+                <canvas id="expenseChart"></canvas>
+            </div>
+        </div>
+
+        <div class="activity-section">
+            <div class="activity-title">Recent Activity</div>
+            <table class="activity-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Station</th>
+                        <th>Amount</th>
+                        <th>Cost</th>
+                    </tr>
+                </thead>
+                <tbody id="activityBody">
+                    <tr>
+                        <td colspan="4" style="text-align:center;color:var(--text-secondary);padding:2rem;">
+                            Loading...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <button class="log-expense-btn" onclick="window.location.href='index.html'">← Back to Stations</button>
+
+    <script>
+        const SUPABASE_URL = "https://zrgvxxbdevcwkpohckwj.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpyZ3Z4eGJkZXZjd2twb2hja3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2NzAwNzgsImV4cCI6MjA5MjI0NjA3OH0.-js43IF_QQk7793-AqP6aSV2VbyWiZWj9SH5tprYjJs";
+        const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+        }
+
+        function showSection(section) {
+            alert(section + ' section coming soon!');
+        }
+
+        async function loadDashboard() {
+            const { data: { user } } = await client.auth.getUser();
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Get URL params for highlighting
+            const urlParams = new URLSearchParams(window.location.search);
+            const highlightStation = urlParams.get('station');
+            const highlightAmount = urlParams.get('amount');
+
+            const currentMonth = new Date().toISOString().slice(0, 7);
+            const { data: logs } = await client
+              .from("fuel_logs")
+              .select("*")
+              .eq("user_id", user.id)
+              .gte("refill_date", `${currentMonth}-01`)
+              .order("refill_date", { ascending: false });
+
+            if (!logs || logs.length === 0) {
+                document.getElementById('activityBody').innerHTML =
+                    '<tr><td colspan="4" style="text-align:center;color:var(--text-secondary);padding:2rem;">No expenses yet. Start logging!</td></tr>';
+                return;
+            }
+
+            // Calculate stats
+            const totalFuel = logs.reduce((sum, l) => sum + parseFloat(l.fuel_amount), 0);
+            const totalSpent = logs.reduce((sum, l) => sum + parseFloat(l.total_cost), 0);
+            const avgPrice = totalSpent / totalFuel;
+            const lastRefill = new Date(logs[0].refill_date);
+
+            // Animate values
+            animateValue('totalSpend', 0, totalSpent, 1200, '₹');
+            animateValue('avgEfficiency', 0, avgPrice, 1200, '₹/L');
+            document.getElementById('lastRefill').textContent = lastRefill.toLocaleDateString('en-IN', {
+                month: 'short', day: 'numeric', year: 'numeric'
+            });
+
+            // Draw Chart
+            drawChart(logs);
+
+            // Show Recent Activity
+            const activityBody = document.getElementById('activityBody');
+            activityBody.innerHTML = logs.slice(0, 10).map((log, idx) => {
+                const isHighlight = highlightStation &&
+                                   log.pump_name === highlightStation &&
+                                   log.total_cost == highlightAmount;
+                return `
+                    <tr class="${isHighlight? 'highlight-row' : ''}">
+                        <td>${new Date(log.refill_date).toLocaleDateString('en-IN', {month:'short', day:'numeric', year:'numeric'})}</td>
+                        <td>${log.pump_name}</td>
+                        <td>${log.fuel_amount} ${log.vehicle_type === 'EV'? 'kWh' : 'L'}</td>
+                        <td>₹${log.total_cost}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function animateValue(id, start, end, duration, prefix) {
+            const obj = document.getElementById(id);
+            const range = end - start;
+            const increment = range / (duration / 16);
+            let current = start;
+
+            const timer = setInterval(() => {
+                current += increment;
+                if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+                    current = end;
+                    clearInterval(timer);
+                }
+                obj.textContent = prefix + current.toFixed(2);
+            }, 16);
+        }
+
+        function drawChart(logs) {
+            const ctx = document.getElementById('expenseChart').getContext('2d');
+
+            // Group by date
+            const grouped = {};
+            logs.forEach(log => {
+                const date = new Date(log.refill_date).toLocaleDateString('en-IN', {month:'short'});
+                grouped[date] = (grouped[date] || 0) + parseFloat(log.total_cost);
+            });
+
+            const labels = Object.keys(grouped).reverse();
+            const data = Object.values(grouped).reverse();
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Expense (₹)',
+                        data: data,
+                        borderColor: '#10B981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#10B981',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#1F2937',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: '#10B981',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    return '₹' + context.parsed.y.toFixed(2);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#E5E7EB', drawBorder: false },
+                            ticks: {
+                                color: '#6B7280',
+                                callback: function(value) {
+                                    return '₹' + value;
+                                }
+                            }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#6B7280' }
+                        }
+                    }
+                }
+            });
+        }
+
+        loadDashboard();
+    </script>
+</body>
+</html>

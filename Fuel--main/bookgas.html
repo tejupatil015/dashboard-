@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Gas Cylinder - FuelFinder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="example.css">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg-primary);
+    min-height: 100vh;
+    padding: 16px;
+    color: var(--text-primary);
+}
+
+.booking-container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+}
+
+.booking-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent-orange), var(--accent-cyan), var(--accent-blue));
+    border-radius: 20px 20px 0 0;
+}
+
+.booking-header { text-align: center; margin-bottom: 32px; }
+
+.booking-header h1 {
+    font-size: clamp(1.8rem, 6vw, 2.5rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent-orange), var(--accent-cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+}
+
+.booking-header p { 
+    color: var(--text-secondary); 
+    font-size: clamp(0.95rem, 3vw, 1.1rem); 
+}
+
+.step-indicators {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    gap: 8px;
+    position: relative;
+}
+
+.step-indicators::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 15%;
+    right: 15%;
+    height: 2px;
+    background: var(--border);
+    z-index: 0;
+}
+
+.step-indicator { 
+    flex: 1; 
+    text-align: center; 
+    position: relative; 
+    z-index: 1; 
+}
+
+.step-indicator.active .step-number {
+    background: linear-gradient(135deg, var(--accent-orange), var(--accent-cyan));
+    color: var(--bg-primary);
+    box-shadow: var(--shadow-glow-orange);
+    transform: scale(1.15);
+    border: 2px solid var(--accent-orange);
+}
+
+.step-indicator.completed .step-number {
+    background: var(--accent-green);
+    color: var(--bg-primary);
+    box-shadow: 0 0 20px rgba(0, 200, 83, 0.5);
+    border: 2px solid var(--accent-green);
+}
+
+.step-number {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    border-radius: 50%;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border);
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text-muted);
+    transition: var(--transition);
+    font-size: 0.9rem;
+}
+
+.step-label { 
+    font-size: clamp(0.75rem, 2.5vw, 0.9rem); 
+    color: var(--text-secondary); 
+    font-weight: 500; 
+}
+
+.step-content { display: none; }
+.step-content.active { display: block; animation: fadeIn 0.4s ease; }
+
+@keyframes fadeIn { 
+    from { opacity: 0; transform: translateY(15px); } 
+    to { opacity: 1; transform: translateY(0); } 
+}
+
+.form-section h3 {
+    color: var(--text-primary);
+    margin-bottom: 20px;
+    font-size: clamp(1.2rem, 4vw, 1.5rem);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.form-section h3::before {
+    content: '';
+    width: 4px;
+    height: 20px;
+    background: linear-gradient(180deg, var(--accent-orange), var(--accent-cyan));
+    border-radius: 2px;
+}
+
+.provider-grid { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 12px; 
+    margin-bottom: 20px; 
+}
+
+.provider-option {
+    padding: 20px 16px;
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    background: var(--bg-secondary);
+    position: relative;
+    overflow: hidden;
+}
+
+.provider-option:active { transform: scale(0.98); }
+
+.provider-option:hover { 
+    border-color: var(--accent-orange); 
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(255, 107, 0, 0.2);
+}
+
+.provider-option.selected {
+    border-color: var(--accent-orange);
+    background: rgba(255, 107, 0, 0.15);
+    box-shadow: var(--shadow-glow-orange);
+}
+
+.provider-logo {
+    width: 56px;
+    height: 56px;
+    line-height: 56px;
+    margin: 0 auto 10px;
+    border-radius: 50%;
+    color: white;
+    font-weight: 800;
+    font-size: 1.1rem;
+    box-shadow: var(--shadow-md);
+}
+
+.provider-name { 
+    font-weight: 600; 
+    color: var(--text-primary); 
+    font-size: 0.95rem; 
+}
+
+.form-grid { 
+    display: grid; 
+    grid-template-columns: 1fr; 
+    gap: 16px; 
+}
+
+.form-group { margin-bottom: 16px; }
+.form-group.full-width { grid-column: 1 / -1; }
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+.form-label span { color: var(--accent-red); }
+
+.form-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: var(--transition);
+    background: var(--bg-input);
+    color: var(--text-primary);
+    font-family: 'Outfit', sans-serif;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--accent-orange);
+    box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.15);
+}
+
+.form-input::placeholder { color: var(--text-muted); }
+
+.cylinder-grid { 
+    display: grid; 
+    grid-template-columns: 1fr; 
+    gap: 12px; 
+    margin-bottom: 16px; 
+}
+
+.cylinder-option {
+    padding: 20px 16px;
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    background: var(--bg-secondary);
+}
+
+.cylinder-option:active { transform: scale(0.98); }
+.cylinder-option:hover { border-color: var(--accent-cyan); }
+
+.cylinder-option.selected {
+    border-color: var(--accent-cyan);
+    background: rgba(0, 255, 209, 0.15);
+    box-shadow: var(--shadow-glow-cyan);
+}
+
+.cylinder-weight {
+    font-size: 1.6rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 4px;
+}
+
+.cylinder-type { 
+    color: var(--text-secondary); 
+    font-size: 0.85rem; 
+    font-weight: 500; 
+}
+
+.cylinder-actions {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    animation: slideDown 0.3s ease;
+}
+
+.cylinder-data {
+    background: var(--bg-primary);
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+
+.cylinder-data h4 {
+    color: var(--accent-cyan);
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.cylinder-data p {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin: 6px 0;
+    padding: 0;
+}
+
+.cylinder-data span {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.payment-grid { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 12px; 
+    margin-bottom: 16px; 
+}
+
+.payment-option {
+    padding: 20px 12px;
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    background: var(--bg-secondary);
+}
+
+.payment-option:active { transform: scale(0.98); }
+.payment-option:hover { border-color: var(--accent-blue); }
+
+.payment-option.selected {
+    border-color: var(--accent-blue);
+    background: rgba(74, 144, 217, 0.15);
+    box-shadow: 0 0 20px rgba(74, 144, 217, 0.3);
+}
+
+.payment-icon { font-size: 2.2rem; margin-bottom: 8px; }
+.payment-name { font-weight: 600; color: var(--text-primary); font-size: 0.9rem; }
+
+.summary-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 16px;
+}
+
+.summary-row:last-child { border-bottom: none; }
+.summary-label { 
+    font-weight: 600; 
+    color: var(--text-secondary); 
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+.summary-value { 
+    color: var(--text-primary); 
+    font-weight: 600; 
+    text-align: right;
+    font-size: 0.9rem;
+    word-break: break-word;
+}
+
+.button-group { 
+    display: flex; 
+    flex-direction: column;
+    gap: 12px; 
+    margin-top: 24px; 
+}
+
+.btn {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: 'Outfit', sans-serif;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--accent-orange), var(--accent-red));
+    color: white;
+    box-shadow: var(--shadow-glow-orange);
+}
+
+.btn-primary:active { transform: scale(0.98); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.btn-secondary {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 2px solid var(--border);
+}
+
+.btn-secondary:active { background: var(--bg-hover); }
+
+.success-state { text-align: center; padding: 40px 16px; }
+.success-icon { font-size: 4rem; margin-bottom: 20px; animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+@keyframes popIn {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.success-state h2 {
+    color: var(--accent-green);
+    margin-bottom: 12px;
+    font-size: clamp(1.8rem, 5vw, 2.2rem);
+    font-weight: 800;
+}
+.success-state p { color: var(--text-secondary); margin-bottom: 20px; font-size: 1rem; }
+
+.booking-ref {
+    background: var(--bg-secondary);
+    border: 2px solid var(--accent-cyan);
+    padding: 16px;
+    border-radius: 12px;
+    font-weight: 800;
+    color: var(--accent-cyan);
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+    box-shadow: var(--shadow-glow-cyan);
+}
+
+.error-message {
+    background: rgba(255, 87, 34, 0.1);
+    border: 1px solid var(--accent-red);
+    color: var(--accent-red);
+    padding: 14px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    display: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+.error-message.show { display: block; animation: slideDown 0.3s ease; }
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.loading { display: none; text-align: center; padding: 40px; }
+.loading.show { display: block; }
+
+.spinner {
+    border: 4px solid var(--bg-secondary);
+    border-top: 4px solid var(--accent-orange);
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* Tablet */
+@media (min-width: 640px) {
+    .booking-container { padding: 32px; }
+    .form-grid { grid-template-columns: 1fr 1fr; }
+    .cylinder-grid { grid-template-columns: 1fr 1fr 1fr; }
+    .button-group { flex-direction: row; }
+}
+
+/* Desktop */
+@media (min-width: 768px) {
+    .booking-container { padding: 48px; }
+    .provider-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+
+</head>
+
+<body>
+    <div class="booking-container">
+        <div class="booking-header">
+            <h1>Book Gas Cylinder</h1>
+            <p>Quick and easy home delivery</p>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+
+        <div class="step-indicators">
+            <div class="step-indicator active" data-step="1">
+                <div class="step-number">1</div>
+                <div class="step-label">Select Provider</div>
+            </div>
+            <div class="step-indicator" data-step="2">
+                <div class="step-number">2</div>
+                <div class="step-label">Your Details</div>
+            </div>
+            <div class="step-indicator" data-step="3">
+                <div class="step-number">3</div>
+                <div class="step-label">Review & Confirm</div>
+            </div>
+        </div>
+
+        <!-- Step 1 -->
+        <div class="step-content active" id="step1">
+            <div class="form-section">
+                <h3>Select Your Gas Provider</h3>
+                <div class="provider-grid">
+                    <div class="provider-option" data-provider="hp">
+                        <div class="provider-logo" style="background: #E53935;">HP</div>
+                        <div class="provider-name">HP Gas</div>
+                    </div>
+                    <div class="provider-option" data-provider="bharat">
+                        <div class="provider-logo" style="background: #1976D2;">BG</div>
+                        <div class="provider-name">Bharat Gas</div>
+                    </div>
+                    <div class="provider-option" data-provider="indane">
+                        <div class="provider-logo" style="background: #F57C00;">IN</div>
+                        <div class="provider-name">Indane</div>
+                    </div>
+                    <div class="provider-option" data-provider="indian">
+                        <div class="provider-logo" style="background: #FFC107; color: #000;">IG</div>
+                        <div class="provider-name">Indian Gas</div>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-primary" id="step1Next">Continue</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step-content" id="step2">
+            <div class="form-section">
+                <h3>Enter Your Details</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Full Name <span>*</span></label>
+                        <input type="text" class="form-input" id="fullName" placeholder="Enter your name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email Address <span>*</span></label>
+                        <input type="email" class="form-input" id="email" placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Mobile Number <span>*</span></label>
+                        <input type="tel" class="form-input" id="mobileNumber" placeholder="10-digit mobile number"
+                            maxlength="10">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Consumer ID <span>*</span></label>
+                        <input type="text" class="form-input" id="consumerId" placeholder="Enter your consumer ID">
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">Delivery Address <span>*</span></label>
+                        <input type="text" class="form-input" id="address"
+                            placeholder="Enter complete delivery address">
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">Cylinder Type <span>*</span></label>
+                        <div class="cylinder-grid">
+                            <div class="cylinder-option" data-type="14.2">
+                                <div class="cylinder-weight">14.2 kg</div>
+                                <div class="cylinder-type">Regular</div>
+                            </div>
+                            <div class="cylinder-option" data-type="5">
+                                <div class="cylinder-weight">5 kg</div>
+                                <div class="cylinder-type">Compact</div>
+                            </div>
+                            <div class="cylinder-option" data-type="19">
+                                <div class="cylinder-weight">19 kg</div>
+                                <div class="cylinder-type">Commercial</div>
+                            </div>
+                        </div>
+                        <!-- Cylinder Actions - Show when cylinder is selected -->
+                        <div class="cylinder-actions" id="cylinderActions" style="display: none; margin-top: 20px;">
+                            <div class="cylinder-data">
+                                <h4>Selected Cylinder Details</h4>
+                                <p><strong>Type:</strong> <span id="selectedCylinderType">-</span></p>
+                                <p><strong>Weight:</strong> <span id="selectedCylinderWeight">-</span> kg</p>
+                                <p><strong>Standard Price:</strong> <span id="selectedCylinderPrice">-</span></p>
+                            </div>
+                            <div class="button-group" style="margin-top: 16px;">
+                                <button type="button" class="btn btn-primary" id="buyNowBtn">Buy Now</button>
+                                <button type="button" class="btn btn-secondary" id="addExpenseBtn">Add Expense</button>
+                                <button type="button" class="btn btn-secondary" id="compareBtn">Compare</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Preferred Delivery Date <span>*</span></label>
+                        <input type="date" class="form-input" id="deliveryDate">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Payment Method <span>*</span></label>
+                        <div class="payment-grid">
+                            <div class="payment-option" data-payment="online">
+                                <div class="payment-icon">💳</div>
+                                <div class="payment-name">Online Payment</div>
+                            </div>
+                            <div class="payment-option" data-payment="cod">
+                                <div class="payment-icon">💵</div>
+                                <div class="payment-name">Cash on Delivery</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn btn-secondary" id="step2Back">Back</button>
+                    <button type="button" class="btn btn-primary" id="step2Next">Continue</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step-content" id="step3">
+            <div class="form-section">
+                <h3>Review Your Booking</h3>
+                <div class="summary-card">
+                    <div class="summary-row"><span class="summary-label">Provider</span><span class="summary-value"
+                            id="summaryProvider">-</span></div>
+                    <div class="summary-row"><span class="summary-label">Full Name</span><span class="summary-value"
+                            id="summaryName">-</span></div>
+                    <div class="summary-row"><span class="summary-label">Email</span><span class="summary-value"
+                            id="summaryEmail">-</span></div>
+                    <div class="summary-row"><span class="summary-label">Mobile</span><span class="summary-value"
+                            id="summaryMobile">-</span></div>
+                    <div class="summary-row"><span class="summary-label">Consumer ID</span><span class="summary-value"
+                            id="summaryConsumer">-</span></div>
+                    <div class="summary-row"><span class="summary-label">Cylinder Type</span><span class="summary-value"
+                            id="summaryCylinder">-</span></div>
+                    <div class="summary-row"><span class="summary-label">Delivery Date</span><span class="summary-value"
+                            id="summaryDate">-</span></div>
+                    <div class="summary-row"><span class="summary-label">Delivery Address</span><span
+                            class="summary-value" id="summaryAddress">-</span></div>
+                    <div class="summary-row"><span class="summary-label">Payment Method</span><span
+                            class="summary-value" id="summaryPayment">-</span></div>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn btn-secondary" id="step3Back">Back</button>
+                    <button type="button" class="btn btn-primary" id="confirmBtn">Confirm Booking</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success -->
+        <div class="step-content" id="successState">
+            <div class="success-state">
+                <div class="success-icon">✓</div>
+                <h2>Booking Confirmed!</h2>
+                <p>Your gas cylinder will be delivered in 2-3 business days.</p>
+                <div class="booking-ref" id="bookingRef">#FUEL000000</div>
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="location.reload()">Book Another</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <div class="loading" id="loadingState">
+            <div class="spinner"></div>
+            <p>Processing your booking...</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = "https://zrgvxxbdevcwkpohckwj.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpyZ3Z4eGJkZXZjd2twb2hja3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2NzAwNzgsImV4cCI6MjA5MjI0NjA3OH0.-js43IF_QQk7793-AqP6aSV2VbyWiZWj9SH5tprYjJs";
+        const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Cylinder pricing data
+        const cylinderPrices = {
+            '14.2': { price: '₹899', description: 'Regular household use' },
+            '5': { price: '₹450', description: 'Portable/compact use' },
+            '19': { price: '₹1,050', description: 'Commercial/industrial' }
+        };
+
+        let bookingData = {
+            provider: null,
+            fullName: null,
+            email: null,
+            mobileNumber: null,
+            consumerId: null,
+            address: null,
+            cylinderType: null,
+            deliveryDate: null,
+            paymentMethod: null
+        };
+
+        let currentStep = 1;
+
+        window.onload = function () {
+            setupListeners();
+            setMinDate();
+        };
+
+        function setupListeners() {
+            document.querySelectorAll('.provider-option').forEach(el => {
+                el.onclick = function () {
+                    document.querySelectorAll('.provider-option').forEach(o => o.classList.remove('selected'));
+                    this.classList.add('selected');
+                    bookingData.provider = this.getAttribute('data-provider');
+                    hideError();
+                };
+            });
+
+            document.querySelectorAll('.cylinder-option').forEach(el => {
+                el.onclick = function () {
+                    document.querySelectorAll('.cylinder-option').forEach(o => o.classList.remove('selected'));
+                    this.classList.add('selected');
+                    bookingData.cylinderType = this.getAttribute('data-type');
+                    
+                    // Show cylinder actions and display data
+                    showCylinderActions(bookingData.cylinderType);
+                    hideError();
+                };
+            });
+
+            document.querySelectorAll('.payment-option').forEach(el => {
+                el.onclick = function () {
+                    document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
+                    this.classList.add('selected');
+                    bookingData.paymentMethod = this.getAttribute('data-payment');
+                    hideError();
+                };
+            });
+
+            document.getElementById('step1Next').onclick = () => nextStep(1);
+            document.getElementById('step2Back').onclick = () => previousStep();
+            document.getElementById('step2Next').onclick = () => nextStep(2);
+            document.getElementById('step3Back').onclick = () => previousStep();
+            document.getElementById('confirmBtn').onclick = confirmBooking;
+
+            // Cylinder action buttons
+            const buyNowBtn = document.getElementById('buyNowBtn');
+            const addExpenseBtn = document.getElementById('addExpenseBtn');
+            const compareBtn = document.getElementById('compareBtn');
+            
+            if (buyNowBtn) buyNowBtn.onclick = () => handleBuyNow();
+            if (addExpenseBtn) addExpenseBtn.onclick = () => handleAddExpense();
+            if (compareBtn) compareBtn.onclick = () => handleCompare();
+        }
+
+        function nextStep(step) {
+            if (step === 1) {
+                if (!bookingData.provider) {
+                    showError("Please select a gas provider");
+                    return;
+                }
+            } else if (step === 2) {
+                const fullName = document.getElementById('fullName').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const mobileNumber = document.getElementById('mobileNumber').value.trim();
+                const consumerId = document.getElementById('consumerId').value.trim();
+                const address = document.getElementById('address').value.trim();
+                const deliveryDate = document.getElementById('deliveryDate').value;
+
+                if (!fullName) { showError("Please enter your full name"); return; }
+                if (!email) { showError("Please enter your email"); return; }
+                if (!mobileNumber) { showError("Please enter mobile number"); return; }
+                if (mobileNumber.length !== 10 || !/^\d+$/.test(mobileNumber)) {
+                    showError("Please enter valid 10-digit mobile number");
+                    return;
+                }
+                if (!consumerId) { showError("Please enter consumer ID"); return; }
+                if (!address) { showError("Please enter delivery address"); return; }
+                if (!deliveryDate) { showError("Please select delivery date"); return; }
+                if (!bookingData.cylinderType) { showError("Please select cylinder type"); return; }
+                if (!bookingData.paymentMethod) { showError("Please select payment method"); return; }
+
+                bookingData.fullName = fullName;
+                bookingData.email = email;
+                bookingData.mobileNumber = mobileNumber;
+                bookingData.consumerId = consumerId;
+                bookingData.address = address;
+                bookingData.deliveryDate = deliveryDate;
+                updateSummary();
+            }
+
+            currentStep = step + 1;
+            showStep(currentStep);
+            hideError();
+        }
+
+        function previousStep() {
+            currentStep--;
+            showStep(currentStep);
+        }
+
+        function showStep(step) {
+            document.querySelectorAll('.step-content').forEach(c => c.classList.remove('active'));
+            document.getElementById('step' + step).classList.add('active');
+
+            document.querySelectorAll('.step-indicator').forEach((ind, i) => {
+                const s = i + 1;
+                if (s < step) {
+                    ind.classList.add('completed');
+                    ind.classList.remove('active');
+                } else if (s === step) {
+                    ind.classList.add('active');
+                    ind.classList.remove('completed');
+                } else {
+                    ind.classList.remove('active', 'completed');
+                }
+            });
+            window.scrollTo(0, 0);
+        }
+
+        function updateSummary() {
+            const provMap = { 'hp': 'HP Gas', 'bharat': 'Bharat Gas', 'indane': 'Indane', 'indian': 'Indian Gas' };
+            const payMap = { 'online': 'Online Payment', 'cod': 'Cash on Delivery' };
+
+            document.getElementById('summaryProvider').textContent = provMap[bookingData.provider] || '-';
+            document.getElementById('summaryName').textContent = bookingData.fullName;
+            document.getElementById('summaryEmail').textContent = bookingData.email;
+            document.getElementById('summaryMobile').textContent = bookingData.mobileNumber;
+            document.getElementById('summaryConsumer').textContent = bookingData.consumerId;
+            document.getElementById('summaryCylinder').textContent = bookingData.cylinderType + ' kg';
+            document.getElementById('summaryDate').textContent = bookingData.deliveryDate;
+            document.getElementById('summaryAddress').textContent = bookingData.address;
+            document.getElementById('summaryPayment').textContent = payMap[bookingData.paymentMethod] || '-';
+        }
+
+        async function confirmBooking() {
+            const btn = document.getElementById('confirmBtn');
+            btn.disabled = true;
+            btn.textContent = 'Processing...';
+            showLoading(true);
+            hideError();
+
+            try {
+                const bookingRef = '#FUEL' + Date.now().toString().slice(-8).toUpperCase();
+
+                const { data, error } = await client
+                    .from('gas_bookings')
+                    .insert([{
+                        booking_ref: bookingRef,
+                        provider: bookingData.provider,
+                        full_name: bookingData.fullName,
+                        email: bookingData.email,
+                        mobile_number: bookingData.mobileNumber,
+                        consumer_id: bookingData.consumerId,
+                        delivery_address: bookingData.address,
+                        cylinder_type: bookingData.cylinderType,
+                        delivery_date: bookingData.deliveryDate,
+                        payment_method: bookingData.paymentMethod,
+                        status: 'confirmed'
+                    }])
+                    .select();
+
+                if (error) throw error;
+
+                showLoading(false);
+                document.getElementById('bookingRef').textContent = bookingRef;
+                document.querySelectorAll('.step-content').forEach(c => c.classList.remove('active'));
+                document.getElementById('successState').classList.add('active');
+
+            } catch (err) {
+                showLoading(false);
+                console.error('Error:', err);
+                showError('Error processing booking: ' + err.message);
+                btn.disabled = false;
+                btn.textContent = 'Confirm Booking';
+            }
+        }
+
+        function showError(msg) {
+            const el = document.getElementById('errorMessage');
+            el.textContent = msg;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 5000);
+        }
+
+        function hideError() {
+            document.getElementById('errorMessage').classList.remove('show');
+        }
+
+        function showLoading(show) {
+            const el = document.getElementById('loadingState');
+            if (show) el.classList.add('show');
+            else el.classList.remove('show');
+        }
+
+        function setMinDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('deliveryDate').setAttribute('min', today);
+        }
+
+        function showCylinderActions(cylinderType) {
+            const actionsDiv = document.getElementById('cylinderActions');
+            const priceData = cylinderPrices[cylinderType];
+            
+            if (priceData) {
+                document.getElementById('selectedCylinderType').textContent = cylinderType + ' kg';
+                document.getElementById('selectedCylinderWeight').textContent = cylinderType;
+                document.getElementById('selectedCylinderPrice').textContent = priceData.price;
+                actionsDiv.style.display = 'block';
+            }
+        }
+
+        function handleBuyNow() {
+            if (bookingData.cylinderType) {
+                showError('Proceeding to checkout for ' + bookingData.cylinderType + ' kg cylinder');
+                // Add your buy now logic here
+            } else {
+                showError('Please select a cylinder type first');
+            }
+        }
+
+        function handleAddExpense() {
+            if (bookingData.cylinderType) {
+                alert('Adding expense record for ' + bookingData.cylinderType + ' kg cylinder\n\nThis feature will allow you to track fuel expenses.');
+                // Add your expense tracking logic here
+            } else {
+                showError('Please select a cylinder type first');
+            }
+        }
+
+        function handleCompare() {
+            if (bookingData.cylinderType) {
+                const priceData = cylinderPrices[bookingData.cylinderType];
+                alert('Comparison Details:\n\nCylinder: ' + bookingData.cylinderType + ' kg\nPrice: ' + priceData.price + '\nDescription: ' + priceData.description);
+                // Add your comparison logic here
+            } else {
+                showError('Please select a cylinder type first');
+            }
+        }
+    </script>
+</body>
+
+</html>
