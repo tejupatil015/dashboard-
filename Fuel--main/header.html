@@ -41,6 +41,8 @@
                 <li><a href="index.html">Home</a></li>
                 <li><a href="bookgas.html">Book Gas</a></li>
                 <li><a href="feedback.html">Feedback</a></li>
+                <li><a href="expense-dashboard.html"></a></li>
+                
                 <button class="settings-btn" onclick="toggleSettings()"><i class="fas fa-cog"></i></button>
                 <button onclick="logout()" class="logout-navbar"><i class="fas fa-sign-out-alt"></i> Logout</button>
             </ul>
@@ -368,6 +370,8 @@
             </div>
         </div>
     </div>
+
+
 
 
 
@@ -956,16 +960,17 @@
                         <div class="custom-amount">
                             <input type="number" id="customAmount${idx}" placeholder="Custom Amount ₹" step="10">
                         </div>
+                       
                         <div class="dropdown-actions">
-                            <button class="btn-cancel" onclick="toggleExpenseDropdown(${idx})">Cancel</button>
-                            <button class="btn-submit" 
-                                    data-idx="${idx}" 
-                                    data-station="${s.Station}" 
-                                    data-type="${type}" 
-                                    data-price="${s.Price}">
-                                Submit & View Dashboard
-                            </button>
-                        </div>
+                       <button class="btn-cancel" onclick="toggleExpenseDropdown(${idx})">Cancel</button>
+                       <button class="btn-submit" 
+                        data-idx="${idx}" 
+                        data-station="${s.Station}" 
+                       data-type="${type}" 
+            data-price="${s.Price}">
+        Submit Expense <!-- ✅ Text changed -->
+    </button>
+</div>
                     </div>
                 </div>
 
@@ -2145,6 +2150,7 @@
 
     </script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
+    <script src="reward.js"></script>
 </body>
 
 </html>

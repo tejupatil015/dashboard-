@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FuelFinder Rewards</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        /* YOUR CSS PALETTE */
+        :root {
+            --bg-primary: #F9F9F9;
+            --bg-secondary: #EFEDE8;
+            --bg-card: #FFFFFF;
+            --bg-hover: #E6E1D9;
+            --bg-input: #F3F1EC;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --text-muted: #999999;
+            --accent-orange: #C8A97E;
+            --accent-cyan: #BFB8AA;
+            --accent-blue: #A89F91;
+            --accent-green: #9C9485;
+            --accent-purple: #BFA58A;
+            --accent-yellow: #E0D8C8;
+            --accent-red: #BFA58A;
+            --border: #DDD6C8;
+            --border-light: #EAE5DC;
+            --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.10);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+            --shadow-glow-orange: 0 0 20px rgba(200, 169, 126, 0.4);
+            --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 1.5rem 1rem;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+
+            100% {
+                background-position: 1000px 0;
+            }
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            padding: 1.5rem 2rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .header:hover {
+            box-shadow: var(--shadow-glow-orange);
+            border-color: var(--accent-orange);
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--accent-orange);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo::before {
+            content: '⚡';
+            animation: pulse 2s infinite;
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-purple));
+            color: #fff;
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: var(--transition);
+            box-shadow: var(--shadow-glow-orange);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .back-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .back-btn:hover::before {
+            left: 100%;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(200, 169, 126, 0.5);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 1.75rem;
+            border-radius: 16px;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(200, 169, 126, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover::after {
+            opacity: 1;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--accent-orange);
+        }
+
+        .stat-icon {
+            font-size: 2.25rem;
+            margin-bottom: 0.75rem;
+            display: inline-block;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover.stat-icon {
+            transform: scale(1.2) rotate(10deg);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        .stat-value {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .stat-card:hover.stat-value {
+            color: var(--accent-orange);
+        }
+
+        /* Card */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 2rem;
+            border-radius: 18px;
+            margin-bottom: 1.75rem;
+            box-shadow: var(--shadow-sm);
+            animation: slideUp 0.8s ease-out;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.75rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-orange), transparent);
+            margin-left: 1rem;
+        }
+
+        /* Offers Grid */
+        .offers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .offer-card {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            padding: 1.75rem;
+            border-radius: 16px;
+            text-align: center;
+            transition: var(--transition);
+            position: relative;
+            cursor: pointer;
+        }
+
+        .offer-card.available {
+            border-color: var(--accent-orange);
+            background: var(--bg-card);
+            box-shadow: var(--shadow-glow-orange);
+        }
+
+        .offer-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(200, 169, 126, 0.05), transparent);
+            opacity: 0;
+            transition: var(--transition);
+            border-radius: 16px;
+        }
+
+        .offer-card:hover::before {
+            opacity: 1;
+        }
+
+        .offer-card:hover {
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--accent-orange);
+        }
+
+        .offer-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-purple));
+            color: #fff;
+            padding: 0.3rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            animation: pulse 2s infinite;
+        }
+
+        .offer-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+            transition: var(--transition);
+        }
+
+        .offer-card:hover.offer-icon {
+            transform: scale(1.2) rotateY(360deg);
+            transition: transform 0.6s;
+        }
+
+        .offer-title {
+            font-weight: 700;
+            font-size: 1.15rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .offer-desc {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+            min-height: 2.5rem;
+            line-height: 1.5;
+        }
+
+        .offer-points {
+            color: var(--accent-orange);
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+        }
+
+        .redeem-btn {
+            width: 100%;
+            padding: 0.85rem;
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-purple));
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .redeem-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .redeem-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .redeem-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-glow-orange);
+        }
+
+        .redeem-btn:disabled {
+            background: var(--bg-input);
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        /* Coupon Card */
+        .coupon-card {
+            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-card));
+            border: 2px solid var(--border);
+            padding: 1.5rem;
+            border-radius: 16px;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .coupon-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, var(--accent-orange), var(--accent-purple));
+            transition: var(--transition);
+        }
+
+        .coupon-card:hover {
+            transform: translateX(8px);
+            border-color: var(--accent-orange);
+            box-shadow: var(--shadow-md);
+        }
+
+        .coupon-card:hover::before {
+            width: 8px;
+        }
+
+        .coupon-code {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: 3px;
+            color: var(--accent-orange);
+            text-shadow: 0 2px 10px rgba(200, 169, 126, 0.3);
+        }
+
+        .coupon-details {
+            color: var(--text-secondary);
+            margin-top: 0.4rem;
+            font-size: 0.85rem;
+        }
+
+        .copy-btn {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.65rem 1.25rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: var(--transition);
+        }
+
+        .copy-btn:hover {
+            background: var(--accent-orange);
+            color: #fff;
+            border-color: var(--accent-orange);
+            transform: scale(1.1);
+        }
+
+        /* History */
+        .history-list {
+            max-height: 450px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .history-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .history-list::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+            border-radius: 10px;
+        }
+
+        .history-list::-webkit-scrollbar-thumb {
+            background: var(--accent-orange);
+            border-radius: 10px;
+        }
+
+        .history-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            padding: 1.25rem;
+            border-radius: 14px;
+            margin-bottom: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .history-item:hover {
+            background: var(--bg-hover);
+            border-color: var(--border);
+            transform: translateX(5px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .history-desc {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+        }
+
+        .history-date {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .points-badge {
+            font-weight: 800;
+            font-size: 1.15rem;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            transition: var(--transition);
+        }
+
+        .points-positive {
+            background: rgba(156, 148, 133, 0.15);
+            color: var(--accent-green);
+            border: 1px solid var(--accent-green);
+        }
+
+        .points-negative {
+            background: rgba(191, 165, 138, 0.15);
+            color: var(--accent-red);
+            border: 1px solid var(--accent-red);
+        }
+
+        .history-item:hover.points-badge {
+            transform: scale(1.1);
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 3rem 1rem;
+            font-size: 1rem;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+
+            .stats-grid,
+            .offers-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1.25rem;
+            }
+
+            .coupon-card {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .stat-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">FuelFinder Rewards</div>
+            <a href="index.html" class="back-btn">← Dashboard</a>
+        </header>
+<div class="card">
+    <h3 class="section-title">⭐ Share Feedback & Earn</h3>
+    <div style="display:flex;gap:1rem;margin-bottom:1rem;">
+        <button onclick="submitFeedback(5, 'Great app!')" class="redeem-btn" style="flex:1;">😍 Excellent</button>
+        <button onclick="submitFeedback(4, 'Good')" class="redeem-btn" style="flex:1;">😊 Good</button>
+        <button onclick="submitFeedback(3, 'Okay')" class="redeem-btn" style="flex:1;">😐 Okay</button>
+    </div>
+</div>
+        <div class="stats-grid">
+            <div class="stat-card">
+               
+                <div class="stat-label">Total Points</div>
+                <div class="stat-value" id="rewardPoints">0</div>
+            </div>
+            <div class="stat-card">
+               
+                <div class="stat-label">Current Streak</div>
+                <div class="stat-value" id="streakDays">0</div>
+            </div>
+            <div class="stat-card">
+               
+                <div class="stat-label">Total Visits</div>
+                <div class="stat-value" id="totalVisits">0</div>
+            </div>
+            <div class="stat-card">
+            
+                <div class="stat-label">Bookings</div>
+                <div class="stat-value" id="totalBookings">0</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 class="section-title"> Available Offers</h3>
+            <div id="offersGrid" class="offers-grid"></div>
+        </div>
+
+        <div class="card">
+            <h3 class="section-title"> Your Active Coupons</h3>
+            <div id="activeCoupons"></div>
+        </div>
+
+        <div class="card">
+            <h3 class="section-title"> Reward History</h3>
+            <div id="rewardHistory" class="history-list"></div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://zrgvxxbdevcwkpohckwj.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpyZ3Z4eGJkZXZjd2twb2hja3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2NzAwNzgsImV4cCI6MjA5MjI0NjA3OH0.-js43IF_QQk7793-AqP6aSV2VbyWiZWj9SH5tprYjJs";
+        const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let currentUser = null;
+        let userRewards = null;
+        let availableOffers = [];
+
+        async function init() {
+            const { data: { user } } = await client.auth.getUser();
+            if (!user) {
+                window.location.href = 'index.html';
+                return;
+            }
+            currentUser = user;
+            await loadRewards();
+            await loadOffers();
+            await loadCoupons();
+            await loadHistory();
+        }
+
+        async function loadRewards() {
+            let { data: rewards } = await client.from("user_rewards").select("*").eq("user_id", currentUser.id).single();
+            if (!rewards) {
+                const { data: newRewards } = await client.from("user_rewards").insert({ user_id: currentUser.id }).select().single();
+                rewards = newRewards;
+            }
+            userRewards = rewards;
+            document.getElementById('rewardPoints').textContent = userRewards.reward_points.toLocaleString();
+            document.getElementById('streakDays').textContent = userRewards.streak_days;
+            document.getElementById('totalVisits').textContent = userRewards.total_visits;
+            document.getElementById('totalBookings').textContent = userRewards.total_bookings;
+        }
+
+        async function loadOffers() {
+            const { data: offers, error } = await client
+                .from("offers")
+                .select("*")
+                .eq("is_active", true)
+                .order("points_required", { ascending: true });
+
+            console.log('Offers loaded:', offers, 'Error:', error);
+
+            availableOffers = offers || [];
+
+            if (availableOffers.length === 0) {
+                document.getElementById('offersGrid').innerHTML = '<div class="empty-state">No offers available right now 🎁</div>';
+                return;
+            }
+
+            const html = availableOffers.map(offer => {
+                const canRedeem = userRewards.reward_points >= offer.points_required;
+                return `
+                    <div class="offer-card ${canRedeem ? 'available' : ''}">
+                        ${canRedeem ? '<div class="offer-badge">Available</div>' : ''}
+                        <div class="offer-icon">${offer.icon || '🎁'}</div>
+                        <div class="offer-title">${offer.title}</div>
+                        <div class="offer-desc">${offer.description || ''}</div>
+                        <div class="offer-points">${offer.points_required} Points</div>
+                        <button class="redeem-btn" onclick="redeemOffer(${offer.id})" ${!canRedeem ? 'disabled' : ''}>
+                            ${canRedeem ? 'Redeem Now' : 'Need More Points'}
+                        </button>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('offersGrid').innerHTML = html;
+        }
+
+        async function loadCoupons() {
+            const { data: coupons } = await client
+                .from("user_coupons")
+                .select("*")
+                .eq("user_id", currentUser.id)
+                .eq("is_used", false)
+                .gte("expires_at", new Date().toISOString().split('T')[0])
+                .order("created_at", { ascending: false });
+
+            const html = coupons && coupons.length > 0 ? coupons.map(c => `
+                <div class="coupon-card">
+                    <div>
+                        <div class="coupon-code">${c.coupon_code}</div>
+                        <div class="coupon-details">
+                            ${c.discount_type === 'percent' ? c.discount_value + '% Off Next Refill' : '₹' + c.discount_value + ' Cashback'}
+                            <br><small>Expires: ${new Date(c.expires_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</small>
+                        </div>
+                    </div>
+                    <button class="copy-btn" onclick="copyCoupon('${c.coupon_code}')">📋 Copy</button>
+                </div>
+            `).join('') : '<div class="empty-state">No active coupons. Redeem points to unlock rewards! 🎁</div>';
+            document.getElementById('activeCoupons').innerHTML = html;
+        }
+
+        async function loadHistory() {
+            const { data: history } = await client
+                .from("reward_history")
+                .select("*")
+                .eq("user_id", currentUser.id)
+                .order("created_at", { ascending: false })
+                .limit(20);
+
+            const html = history && history.length > 0 ? history.map(h => `
+                <div class="history-item">
+                    <div>
+                        <div class="history-desc">${h.description}</div>
+                        <div class="history-date">${new Date(h.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</div>
+                    </div>
+                    <div class="points-badge ${h.points_earned > 0 ? 'points-positive' : 'points-negative'}">
+                        ${h.points_earned > 0 ? '+' : ''}${h.points_earned}
+                    </div>
+                </div>
+            `).join('') : '<div class="empty-state">Start earning points by visiting daily! 🚀</div>';
+            document.getElementById('rewardHistory').innerHTML = html;
+        }
+
+        async function redeemOffer(offerId) {
+            const offer = availableOffers.find(o => o.id === offerId);
+            if (!offer || userRewards.reward_points < offer.points_required) {
+                showToast('Not enough points! Keep earning 🎁', 'error');
+                return;
+            }
+
+            await client.from("user_rewards").update({
+                reward_points: userRewards.reward_points - offer.points_required
+            }).eq("user_id", currentUser.id);
+
+            const couponCode = 'FUEL' + Math.random().toString(36).substr(2, 6).toUpperCase();
+            const expiresAt = new Date();
+            expiresAt.setDate(expiresAt.getDate() + 30);
+
+            await client.from("user_coupons").insert({
+                user_id: currentUser.id,
+                coupon_code: couponCode,
+                discount_type: offer.discount_type,
+                discount_value: offer.discount_value,
+                expires_at: expiresAt.toISOString().split('T')[0]
+            });
+
+            await client.from("reward_history").insert({
+                user_id: currentUser.id,
+                reward_type: 'redeem',
+                points_earned: -offer.points_required,
+                description: `Redeemed: ${offer.title}`
+            });
+
+            showToast(`🎉 Success! Coupon ${couponCode} added`, 'success');
+            await loadRewards();
+            await loadCoupons();
+            await loadHistory();
+        }
+
+        function copyCoupon(code) {
+            navigator.clipboard.writeText(code);
+            showToast(`Copied ${code} 📋`, 'success');
+        }
+
+        function showToast(msg, type = 'success') {
+            const colors = {
+                success: 'linear-gradient(135deg, var(--accent-orange), var(--accent-purple))',
+                error: 'linear-gradient(135deg, var(--accent-red), var(--accent-orange))'
+            };
+            const toast = document.createElement('div');
+            toast.style.cssText = `position:fixed;top:2rem;right:2rem;z-index:2000;background:${colors[type]};color:#fff;padding:1rem 1.5rem;border-radius:12px;box-shadow:var(--shadow-lg);animation:slideInRight 0.4s;font-weight:600;max-width:350px;`;
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        init();
+
+        // ============================================
+// AUTO-TRACK FUNCTIONS
+// ============================================
+
+// 1. Daily Visit Track + 3 Visit Offer Unlock
+async function trackDailyVisit() {
+    const { data: { user } } = await client.auth.getUser();
+    if (!user) return;
+
+    const today = new Date().toISOString().split('T')[0];
+    let { data: rewards } = await client.from("user_rewards").select("*").eq("user_id", user.id).single();
+
+    if (!rewards) {
+        await client.from("user_rewards").insert({
+            user_id: user.id,
+            total_visits: 1,
+            last_visit_date: today,
+            streak_days: 1,
+            reward_points: 10
+        });
+        await addRewardHistory(user.id, 10, 'daily_visit', 'Welcome bonus + Daily visit');
+        await checkAndUnlockOffer('visit_3', 1);
+        return;
+    }
+
+    if (rewards.last_visit_date === today) return;
+
+    const lastVisit = new Date(rewards.last_visit_date);
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    let newStreak = lastVisit.toISOString().split('T')[0] === yesterday.toISOString().split('T')[0]? rewards.streak_days + 1 : 1;
+    const newVisits = rewards.total_visits + 1;
+
+    await client.from("user_rewards").update({
+        total_visits: newVisits,
+        last_visit_date: today,
+        streak_days: newStreak,
+        reward_points: rewards.reward_points + 10
+    }).eq("user_id", user.id);
+
+    await addRewardHistory(user.id, 10, 'daily_visit', 'Daily visit bonus');
+    await checkAndUnlockOffer('visit_3', newVisits);
+    await checkStreakBonus(newStreak, user.id);
+}
+
+// 2. Booking Track + Auto Apply Offer
+async function trackBookingReward(bookingId, bookingAmount) {
+    const { data: { user } } = await client.auth.getUser();
+    if (!user) return;
+
+    const { data: rewards } = await client.from("user_rewards").select("*").eq("user_id", user.id).single();
+    const isFirstBooking = rewards.total_bookings === 0;
+    const newBookings = rewards.total_bookings + 1;
+
+    await client.from("user_rewards").update({
+        total_bookings: newBookings,
+        reward_points: rewards.reward_points + 50
+    }).eq("user_id", user.id);
+
+    await addRewardHistory(user.id, 50, 'booking', 'Fuel booking completed! ⛽');
+
+    // Auto apply first booking offer
+    if (isFirstBooking) {
+        await autoApplyOffer('booking', 1, bookingId, bookingAmount);
+        await addRewardHistory(user.id, 100, 'booking', 'First booking bonus! 🎉');
+    }
+}
+
+// 3. Feedback Submit + Unlock Offer
+async function submitFeedback(rating, comment) {
+    const { data: { user } } = await client.auth.getUser();
+    if (!user) return;
+
+    await client.from("feedback").insert({
+        user_id: user.id,
+        rating: rating,
+        comment: comment
+    });
+
+    await addRewardHistory(user.id, 20, 'feedback', 'Feedback submitted! Thank you ⭐');
+    await checkAndUnlockOffer('feedback', 1);
+
+    showToast('Thanks for your feedback! Reward unlocked 🎁', 'success');
+}
+
+// 4. Check & Unlock Offers Based on Trigger
+async function checkAndUnlockOffer(triggerType, currentCount) {
+    const { data: offers } = await client
+     .from("offers")
+     .select("*")
+     .eq("auto_apply", true)
+     .eq("trigger_type", triggerType)
+     .eq("trigger_count", currentCount)
+     .eq("is_active", true);
+
+    if (!offers || offers.length === 0) return;
+
+    for (const offer of offers) {
+        // Check if already applied
+        const { data: alreadyApplied } = await client
+         .from("applied_offers")
+         .select("id")
+         .eq("user_id", currentUser.id)
+         .eq("offer_id", offer.id)
+         .single();
+
+        if (!alreadyApplied) {
+            await unlockOffer(offer);
+        }
+    }
+}
+
+// 5. Auto Apply Offer
+async function autoApplyOffer(triggerType, count, bookingId = null, bookingAmount = 0) {
+    const { data: offers } = await client
+     .from("offers")
+     .select("*")
+     .eq("auto_apply", true)
+     .eq("trigger_type", triggerType)
+     .eq("trigger_count", count)
+     .eq("is_active", true);
+
+    if (!offers || offers.length === 0) return;
+
+    for (const offer of offers) {
+        const couponCode = 'AUTO' + Math.random().toString(36).substr(2, 6).toUpperCase();
+        const expiresAt = new Date();
+        expiresAt.setDate(expiresAt.getDate() + 30);
+
+        // Create coupon
+        await client.from("user_coupons").insert({
+            user_id: currentUser.id,
+            coupon_code: couponCode,
+            discount_type: offer.discount_type,
+            discount_value: offer.discount_value,
+            expires_at: expiresAt.toISOString().split('T')[0]
+        });
+
+        // Log applied offer
+        await client.from("applied_offers").insert({
+            user_id: currentUser.id,
+            offer_id: offer.id,
+            coupon_code: couponCode,
+            booking_id: bookingId,
+            discount_applied: offer.discount_type === 'percent'? (bookingAmount * offer.discount_value / 100) : offer.discount_value
+        });
+
+        await addRewardHistory(currentUser.id, 0, 'auto_apply', `Auto unlocked: ${offer.title}`);
+        showToast(`🎉 ${offer.title} unlocked! Code: ${couponCode}`, 'success');
+    }
+}
+
+// 6. Unlock Offer (Manual trigger)
+async function unlockOffer(offer) {
+    const couponCode = 'FUEL' + Math.random().toString(36).substr(2, 6).toUpperCase();
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 30);
+
+    await client.from("user_coupons").insert({
+        user_id: currentUser.id,
+        coupon_code: couponCode,
+        discount_type: offer.discount_type,
+        discount_value: offer.discount_value,
+        expires_at: expiresAt.toISOString().split('T')[0]
+    });
+
+    await client.from("applied_offers").insert({
+        user_id: currentUser.id,
+        offer_id: offer.id,
+        coupon_code: couponCode
+    });
+
+    await addRewardHistory(currentUser.id, 0, 'unlock', `Unlocked: ${offer.title}`);
+    showToast(`🔓 ${offer.title} unlocked! Code: ${couponCode}`, 'success');
+    await loadCoupons();
+}
+
+// 7. Streak Bonus
+async function checkStreakBonus(streak, userId) {
+    const bonuses = { 3: 30, 7: 100, 15: 250, 30: 600 };
+    if (bonuses[streak]) {
+        await client.from("user_rewards").update({
+            reward_points: userRewards.reward_points + bonuses[streak]
+        }).eq("user_id", userId);
+        await addRewardHistory(userId, bonuses[streak], 'streak', `${streak}-Day Streak Bonus! 🔥`);
+    }
+}
+
+// 8. Helper: Add Reward History
+async function addRewardHistory(userId, points, type, description) {
+    await client.from("reward_history").insert({
+        user_id: userId,
+        reward_type: type,
+        points_earned: points,
+        description: description
+    });
+}
+
+// 9. Apply Coupon to Booking (Call this from booking page)
+async function applyCouponToBooking(couponCode, bookingId, bookingAmount) {
+    const { data: coupon } = await client
+     .from("user_coupons")
+     .select("*")
+     .eq("user_id", currentUser.id)
+     .eq("coupon_code", couponCode)
+     .eq("is_used", false)
+     .single();
+
+    if (!coupon) {
+        showToast('Invalid or expired coupon', 'error');
+        return null;
+    }
+
+    const discount = coupon.discount_type === 'percent'
+       ? (bookingAmount * coupon.discount_value / 100)
+        : coupon.discount_value;
+
+    // Mark coupon as used
+    await client.from("user_coupons").update({ is_used: true }).eq("id", coupon.id);
+
+    // Log applied
+    await client.from("applied_offers").insert({
+        user_id: currentUser.id,
+        coupon_code: couponCode,
+        booking_id: bookingId,
+        discount_applied: discount
+    });
+
+    showToast(`Coupon applied! Saved ₹${discount.toFixed(2)} 💰`, 'success');
+    return discount;
+}
+
+// ============================================
+// INITIALIZE ON PAGE LOAD
+// ============================================
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        if (client) trackDailyVisit();
+    }, 2000);
+});
+    </script>
+</body>
+
+</html>

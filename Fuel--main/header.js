@@ -2,6 +2,8 @@ function logout() {
     localStorage.removeItem("loggedIn");
     localStorage.removeItem("userEmail");
     localStorage.removeItem("rememberUser");
+    // Clear vehicle filter on logout
+    localStorage.removeItem("selectedVehicleType");
     window.location.replace("sign.html");
 }
 
@@ -13,7 +15,62 @@ document.addEventListener('DOMContentLoaded', () => {
     if (nameEl) {
         nameEl.textContent = userName || "Guest";
     }
+
+    // Check for vehicle filter and apply it
+    applyVehicleFilter();
 });
+
+// Function to apply vehicle filter to dashboard
+function applyVehicleFilter() {
+    const selectedVehicleType = localStorage.getItem('selectedVehicleType');
+    
+    if (selectedVehicleType) {
+        // Update header title
+        const headerTitle = document.querySelector('.heroo-section h1');
+        if (headerTitle) {
+            if (selectedVehicleType === 'bike') {
+                headerTitle.textContent = 'Find Fuel for 🏍️ 2 Wheeler';
+            } else if (selectedVehicleType === 'car') {
+                headerTitle.textContent = 'Find Fuel for 🚗 4 Wheeler';
+            }
+        }
+
+        // Update section description
+        const sectionDesc = document.querySelector('.fueltypes p');
+        if (sectionDesc) {
+            if (selectedVehicleType === 'bike') {
+                sectionDesc.textContent = 'Choose fuel options suitable for your 2-wheeler motorcycle or scooter.';
+            } else if (selectedVehicleType === 'car') {
+                sectionDesc.textContent = 'Choose from a variety of fuel options to suit your 4-wheeler vehicle needs.';
+            }
+        }
+
+        // Filter fuel type buttons
+        filterFuelButtons(selectedVehicleType);
+    }
+}
+
+// Function to filter fuel buttons based on vehicle type
+function filterFuelButtons(vehicleType) {
+    const fuelButtons = document.querySelectorAll('.fuel-btn button');
+    
+    if (vehicleType === 'bike') {
+        // For bikes: show only Petrol and Electric
+        fuelButtons.forEach(button => {
+            const buttonClass = button.className;
+            if (buttonClass.includes('petrol-btn') || buttonClass.includes('electric-btn')) {
+                button.style.display = 'inline-block';
+            } else {
+                button.style.display = 'none';
+            }
+        });
+    } else if (vehicleType === 'car') {
+        // For cars: show all fuel types
+        fuelButtons.forEach(button => {
+            button.style.display = 'inline-block';
+        });
+    }
+}
 
 
 

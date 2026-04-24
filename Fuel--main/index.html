@@ -48,12 +48,107 @@
     <p>Loading FuelFinder...</p>
   </div>
 
+  
+
   <script>
 
     setTimeout(() => {
       window.location.replace("sign.html");
     }, 800);
-    
+
+  
+    // ✅ Submit Function - Redirect नाही, फक्त Save + Toast
+async function submitExpense(idx, stationName, fuelType, pricePerUnit, vehicleType, btnElement) {
+    const amount = parseFloat(document.getElementById(`customAmount${idx}`).value);
+
+    if (!vehicleType) {
+        alert("⚠️ Please select Bike or Car first!");
+        document.getElementById(`vehicleType${idx}`).style.borderColor = '#EF4444';
+        document.getElementById(`vehicleType${idx}`).focus();
+        setTimeout(() => {
+            document.getElementById(`vehicleType${idx}`).style.borderColor = '';
+        }, 2000);
+        return;
+    }
+
+    if (!amount || amount <= 0) {
+        alert("Please enter valid amount!");
+        return;
+    }
+
+    const { data: { user } } = await client.auth.getUser();
+    if (!user) {
+        alert("Please login first!");
+        return;
+    }
+
+    const fuelAmount = (amount / pricePerUnit).toFixed(2);
+
+    btnElement.disabled = true;
+    btnElement.innerHTML = '<span class="spinner"></span> Saving...';
+    btnElement.style.opacity = '0.7';
+
+    const { error } = await client.from("fuel_logs").insert({
+        user_id: user.id,
+        vehicle_type: vehicleType, // ✅ bike किंवा car save होईल
+        fuel_amount: fuelAmount,
+        price_per_unit: pricePerUnit,
+        total_cost: amount,
+        pump_name: stationName,
+        odometer_reading: 0
+    });
+
+    if (error) {
+        alert("❌ Error: " + error.message);
+        btnElement.disabled = false;
+        btnElement.textContent = "Submit Expense"; // ✅ Button text change
+        btnElement.style.opacity = '1';
+    } else {
+        btnElement.innerHTML = '✅ Saved!';
+        btnElement.style.background = '#10B981';
+        
+        // ✅ Toast दाखव
+        showSuccessToast(`✅ ₹${amount} expense saved for ${vehicleType === 'bike'? '🏍️ Bike' : '🚗 Car'}!`);
+        
+        // ✅ Dropdown close कर + Reset कर
+        setTimeout(() => {
+            toggleExpenseDropdown(idx);
+            document.getElementById(`vehicleType${idx}`).value = '';
+            document.getElementById(`customAmount${idx}`).value = '';
+            document.querySelectorAll(`#expenseDropdown${idx}.amount-chip`).forEach(c => {
+                c.classList.remove('selected');
+            });
+            btnElement.disabled = false;
+            btnElement.textContent = "Submit Expense";
+            btnElement.style.background = '';
+            btnElement.style.opacity = '1';
+        }, 1500);
+        
+        // ✅ Redirect नाही - User Navbar मधून Dashboard वर जाईल
+    }
+}
+
+// ✅ Success Toast Function
+function showSuccessToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'success-toast';
+    toast.innerHTML = `
+        <div style="display:flex;align-items:center;gap:0.75rem;">
+            <span style="font-size:1.5rem;">✅</span>
+            <div>
+                <div style="font-weight:600;">${message}</div>
+                <div style="font-size:0.85rem;opacity:0.9;margin-top:0.25rem;">Check Dashboard → Vehicles to view</div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+        toast.style.animation = 'slideOutRight 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+        
   </script>
 </body>
 

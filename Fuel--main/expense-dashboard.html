@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,11 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         :root {
             --bg-main: #F5F3EE;
@@ -32,7 +37,7 @@
             min-height: 100vh;
         }
 
-  .sidebar {
+        .sidebar {
             width: 240px;
             background: var(--bg-sidebar);
             padding: 2rem 1rem;
@@ -42,7 +47,7 @@
             z-index: 100;
         }
 
-  .logo {
+        .logo {
             font-size: 1.5rem;
             font-weight: 700;
             color: var(--text-primary);
@@ -50,7 +55,7 @@
             padding-left: 0.5rem;
         }
 
-  .nav-item {
+        .nav-item {
             padding: 0.875rem 1rem;
             margin-bottom: 0.5rem;
             border-radius: 12px;
@@ -60,40 +65,40 @@
             font-weight: 500;
         }
 
-  .nav-item:hover {
+        .nav-item:hover {
             background: var(--bg-main);
             color: var(--text-primary);
             transform: translateX(4px);
         }
 
-  .nav-item.active {
+        .nav-item.active {
             background: var(--text-primary);
             color: #fff;
         }
 
-  .main-content {
+        .main-content {
             flex: 1;
             margin-left: 240px;
             padding: 2rem;
         }
 
-  .header {
+        .header {
             margin-bottom: 2rem;
         }
 
-  .header h1 {
+        .header h1 {
             font-size: 2rem;
             font-weight: 700;
             color: var(--text-primary);
         }
 
-  .filter-tabs {
+        .filter-tabs {
             display: flex;
             gap: 1rem;
             margin-bottom: 2rem;
         }
 
-  .filter-tab {
+        .filter-tab {
             padding: 0.75rem 1.5rem;
             background: var(--bg-card);
             border: 2px solid var(--border);
@@ -104,25 +109,25 @@
             color: var(--text-secondary);
         }
 
-  .filter-tab:hover {
+        .filter-tab:hover {
             border-color: var(--accent-blue);
             transform: translateY(-2px);
         }
 
-  .filter-tab.active {
+        .filter-tab.active {
             background: var(--accent-blue);
             color: #fff;
             border-color: var(--accent-blue);
         }
 
-  .stats-grid {
+        .stats-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
 
-  .stat-card {
+        .stat-card {
             background: var(--bg-card);
             border-radius: 16px;
             padding: 1.5rem;
@@ -130,25 +135,25 @@
             transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
-  .stat-card:hover {
+        .stat-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
         }
 
-  .stat-label {
+        .stat-label {
             font-size: 0.875rem;
             color: var(--text-secondary);
             margin-bottom: 0.5rem;
             font-weight: 500;
         }
 
-  .stat-value {
+        .stat-value {
             font-size: 2rem;
             font-weight: 700;
             color: var(--text-primary);
         }
 
-  .chart-section {
+        .chart-section {
             background: var(--bg-card);
             border-radius: 16px;
             padding: 1.5rem;
@@ -156,42 +161,42 @@
             box-shadow: 0 2px 8px var(--shadow);
         }
 
-  .chart-title {
+        .chart-title {
             font-size: 1rem;
             font-weight: 600;
             margin-bottom: 1.5rem;
             color: var(--text-primary);
         }
 
-  .chart-container {
+        .chart-container {
             position: relative;
             height: 280px;
         }
 
-  .activity-section {
+        .activity-section {
             background: var(--bg-card);
             border-radius: 16px;
             padding: 1.5rem;
             box-shadow: 0 2px 8px var(--shadow);
         }
 
-  .activity-title {
+        .activity-title {
             font-size: 1rem;
             font-weight: 600;
             margin-bottom: 1.5rem;
             color: var(--text-primary);
         }
 
-  .activity-table {
+        .activity-table {
             width: 100%;
             border-collapse: collapse;
         }
 
-  .activity-table thead {
+        .activity-table thead {
             background: var(--bg-main);
         }
 
-  .activity-table th {
+        .activity-table th {
             padding: 0.875rem;
             text-align: left;
             font-size: 0.875rem;
@@ -200,26 +205,26 @@
             border-bottom: 2px solid var(--border);
         }
 
-  .activity-table td {
+        .activity-table td {
             padding: 1rem 0.875rem;
             font-size: 0.9rem;
             color: var(--text-primary);
             border-bottom: 1px solid var(--border);
         }
 
-  .activity-table tbody tr {
+        .activity-table tbody tr {
             transition: all 0.2s ease;
         }
 
-  .activity-table tbody tr:hover {
+        .activity-table tbody tr:hover {
             background: var(--bg-main);
         }
 
-  .highlight-row {
-            background: #FEF3C7!important;
+        .highlight-row {
+            background: #FEF3C7 !important;
         }
 
-  .delete-btn {
+        .delete-btn {
             padding: 0.5rem 1rem;
             background: var(--accent-red);
             color: #fff;
@@ -231,17 +236,17 @@
             transition: all 0.2s ease;
         }
 
-  .delete-btn:hover {
+        .delete-btn:hover {
             background: #DC2626;
             transform: scale(1.05);
         }
 
-  .delete-btn:disabled {
+        .delete-btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
         }
 
-  .reports-section {
+        .reports-section {
             display: none;
             background: var(--bg-card);
             border-radius: 16px;
@@ -249,11 +254,11 @@
             box-shadow: 0 2px 8px var(--shadow);
         }
 
-  .reports-section.active {
+        .reports-section.active {
             display: block;
         }
 
-  .report-item {
+        .report-item {
             display: flex;
             justify-content: space-between;
             padding: 1rem;
@@ -261,35 +266,35 @@
             transition: all 0.2s ease;
         }
 
-  .report-item:hover {
+        .report-item:hover {
             background: var(--bg-main);
             padding-left: 1.5rem;
         }
 
-  .report-label {
+        .report-label {
             font-weight: 600;
             color: var(--text-secondary);
         }
 
-  .report-value {
+        .report-value {
             font-weight: 700;
             color: var(--text-primary);
             font-size: 1.1rem;
         }
 
-  .empty-state {
+        .empty-state {
             text-align: center;
             padding: 4rem 2rem;
             color: var(--text-secondary);
         }
 
-  .empty-state-icon {
+        .empty-state-icon {
             font-size: 4rem;
             margin-bottom: 1rem;
             opacity: 0.5;
         }
 
-  .log-expense-btn {
+        .log-expense-btn {
             position: fixed;
             bottom: 2rem;
             right: 2rem;
@@ -305,36 +310,36 @@
             transition: all 0.3s ease;
         }
 
-  .log-expense-btn:hover {
+        .log-expense-btn:hover {
             transform: scale(1.1);
         }
 
         @media (max-width: 768px) {
-      .sidebar {
+            .sidebar {
                 transform: translateX(-100%);
                 z-index: 1000;
             }
 
-      .sidebar.active {
+            .sidebar.active {
                 transform: translateX(0);
             }
 
-      .main-content {
+            .main-content {
                 margin-left: 0;
                 padding: 1rem;
             }
 
-      .stats-grid {
+            .stats-grid {
                 grid-template-columns: 1fr;
                 gap: 1rem;
             }
 
-      .filter-tabs {
+            .filter-tabs {
                 flex-direction: column;
             }
         }
 
-  .menu-toggle {
+        .menu-toggle {
             display: none;
             position: fixed;
             top: 1rem;
@@ -348,25 +353,32 @@
         }
 
         @media (max-width: 768px) {
-      .menu-toggle {
+            .menu-toggle {
                 display: block;
             }
         }
 
-  .section-content {
+        .section-content {
             display: none;
         }
 
-  .section-content.active {
+        .section-content.active {
             display: block;
         }
 
         @keyframes fadeOut {
-            from { opacity: 1; transform: translateX(0); }
-            to { opacity: 0; transform: translateX(-20px); }
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
         }
 
-  .toast {
+        .toast {
             position: fixed;
             top: 2rem;
             right: 2rem;
@@ -374,17 +386,25 @@
             background: var(--accent-green);
             color: #fff;
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             z-index: 2000;
             animation: slideInRight 0.3s ease;
         }
 
         @keyframes slideInRight {
-            from { transform: translateX(400px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
     </style>
 </head>
+
 <body>
     <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
 
@@ -393,7 +413,8 @@
         <div class="nav-item active" onclick="showSection('dashboard')">Dashboard</div>
         <div class="nav-item" onclick="showSection('vehicles')">Vehicles</div>
         <div class="nav-item" onclick="showSection('reports')">Reports</div>
-        <div class="nav-item" onclick="showSection('settings')">Settings</div>
+        <!-- Dashboard, Vehicles, Reports नंतर -->
+        
     </div>
 
     <div class="main-content">
@@ -584,7 +605,7 @@
         }
 
         // ✅ FIXED DELETE FUNCTION - Event Delegation वापरला
-        document.addEventListener('click', async function(e) {
+        document.addEventListener('click', async function (e) {
             if (e.target.classList.contains('delete-btn')) {
                 const logId = e.target.getAttribute('data-id');
                 if (!confirm('Are you sure you want to delete this expense?')) return;
@@ -593,9 +614,9 @@
                 e.target.textContent = 'Deleting...';
 
                 const { error } = await client
-             .from("fuel_logs")
-             .delete()
-             .eq("id", logId);
+                    .from("fuel_logs")
+                    .delete()
+                    .eq("id", logId);
 
                 if (error) {
                     alert("❌ Error deleting: " + error.message);
@@ -615,7 +636,6 @@
                 }
             }
         });
-
         async function loadDashboard() {
             const { data: { user } } = await client.auth.getUser();
             if (!user) {
@@ -624,28 +644,40 @@
             }
 
             const urlParams = new URLSearchParams(window.location.search);
+            const selectedVehicleType = urlParams.get('type'); // 'bike' किंवा 'car'
+            const section = urlParams.get('section'); // 'vehicles'
             const highlightStation = urlParams.get('station');
             const highlightAmount = urlParams.get('amount');
 
-            const currentMonth = new Date().toISOString().slice(0, 7);
-            const { data: logs, error } = await client
-         .from("fuel_logs")
-         .select("*")
-         .eq("user_id", user.id)
-         .gte("refill_date", `${currentMonth}-01`)
-         .order("refill_date", { ascending: false });
+            // ✅ जर URL मध्ये section=vehicles असेल तर Vehicles tab open कर
+            if (section === 'vehicles') {
+                document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+                document.querySelector('.nav-item:nth-child(2)').classList.add('active');
+                document.querySelectorAll('.section-content').forEach(s => s.classList.remove('active'));
+                document.getElementById('vehiclesSection').classList.add('active');
 
-            if (error) {
-                console.error('Error loading data:', error);
+                // Auto-filter vehicle type
+                if (selectedVehicleType) {
+                    currentFilter = selectedVehicleType;
+                    document.querySelectorAll('.filter-tab').forEach(tab => tab.classList.remove('active'));
+                    document.querySelector(`.filter-tab[onclick="filterVehicle('${selectedVehicleType}')"]`).classList.add('active');
+                }
+                loadVehicles();
                 return;
             }
+
+            // बाकी Dashboard code...
+            const currentMonth = new Date().toISOString().slice(0, 7);
+            const { data: logs } = await client
+                .from("fuel_logs")
+                .select("*")
+                .eq("user_id", user.id)
+                .gte("refill_date", `${currentMonth}-01`)
+                .order("refill_date", { ascending: false });
 
             if (!logs || logs.length === 0) {
                 document.getElementById('emptyState').style.display = 'block';
                 document.getElementById('activityTable').style.display = 'none';
-                document.getElementById('totalSpend').textContent = '₹0.00';
-                document.getElementById('avgEfficiency').textContent = '₹0/L';
-                document.getElementById('lastRefill').textContent = '--';
                 return;
             }
 
@@ -653,86 +685,79 @@
             document.getElementById('emptyState').style.display = 'none';
             document.getElementById('activityTable').style.display = 'table';
 
-            const totalFuel = logs.reduce((sum, l) => sum + parseFloat(l.fuel_amount), 0);
-            const totalSpent = logs.reduce((sum, l) => sum + parseFloat(l.total_cost), 0);
-            const avgPrice = totalFuel > 0? totalSpent / totalFuel : 0;
-            const lastRefill = logs.length > 0? new Date(logs[0].refill_date) : null;
-
-            animateValue('totalSpend', 0, totalSpent, 1200, '₹');
-            animateValue('avgEfficiency', 0, avgPrice, 1200, '₹/L');
-            document.getElementById('lastRefill').textContent = lastRefill?
-                lastRefill.toLocaleDateString('en-IN', {month:'short', day:'numeric', year:'numeric'}) : '--';
-
-            const activityBody = document.getElementById('activityBody');
-            activityBody.innerHTML = logs.slice(0, 10).map((log, idx) => {
-                const isHighlight = highlightStation &&
-                                   log.pump_name === highlightStation &&
-                                   log.total_cost == highlightAmount;
-                return `
-                    <tr class="${isHighlight? 'highlight-row' : ''}" data-id="${log.id}" style="animation-delay:${idx * 0.05}s">
-                        <td>${new Date(log.refill_date).toLocaleDateString('en-IN', {month:'short', day:'numeric', year:'numeric'})}</td>
-                        <td>${log.pump_name}</td>
-                        <td>${log.fuel_amount} ${log.vehicle_type === 'EV'? 'kWh' : 'L'}</td>
-                        <td>₹${log.total_cost}</td>
-                        <td>
-                            <button class="delete-btn" data-id="${log.id}">🗑️ Delete</button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
+            // बाकी stats आणि table code...
         }
-
-        async function loadVehicles() {
+        async function loadDashboard() {
             const { data: { user } } = await client.auth.getUser();
-            if (!user) return;
-
-            // ✅ LOGIC FIX: Correct vehicle categorization
-            let filteredLogs = allLogs;
-            if (currentFilter === 'bike') {
-                filteredLogs = allLogs.filter(l => {
-                    const type = l.vehicle_type?.toLowerCase();
-                    const fuel = parseFloat(l.fuel_amount);
-                    return type === 'bike' || type === 'petrol' || (type === 'diesel' && fuel < 10);
-                });
-            } else if (currentFilter === 'car') {
-                filteredLogs = allLogs.filter(l => {
-                    const type = l.vehicle_type?.toLowerCase();
-                    const fuel = parseFloat(l.fuel_amount);
-                    return type === 'car' || type === 'cng' || type === 'lpg' || (type === 'diesel' && fuel >= 10);
-                });
-            } else if (currentFilter === 'EV') {
-                filteredLogs = allLogs.filter(l => l.vehicle_type?.toLowerCase() === 'ev');
-            }
-
-            if (filteredLogs.length === 0) {
-                document.getElementById('vehicleActivityBody').innerHTML =
-                    '<tr><td colspan="5" style="text-align:center;color:var(--text-secondary);padding:2rem;">No data for this vehicle type</td></tr>';
-                document.getElementById('vehicleTotalSpend').textContent = '₹0.00';
-                document.getElementById('vehicleTotalFuel').textContent = '0 L';
-                document.getElementById('vehicleRefillCount').textContent = '0';
+            if (!user) {
+                window.location.href = 'login.html';
                 return;
             }
 
-            const totalFuel = filteredLogs.reduce((sum, l) => sum + parseFloat(l.fuel_amount), 0);
-            const totalSpent = filteredLogs.reduce((sum, l) => sum + parseFloat(l.total_cost), 0);
+            // ✅ URL वरून vehicle_type घे - bike किंवा car
+            const urlParams = new URLSearchParams(window.location.search);
+            const selectedVehicleType = urlParams.get('type'); // 'bike' किंवा 'car'
+            const highlightStation = urlParams.get('station');
+            const highlightAmount = urlParams.get('amount');
 
-            animateValue('vehicleTotalSpend', 0, totalSpent, 800, '₹');
-            animateValue('vehicleTotalFuel', 0, totalFuel, 800, '', ' L');
-            document.getElementById('vehicleRefillCount').textContent = filteredLogs.length;
+            const currentMonth = new Date().toISOString().slice(0, 7);
+            const { data: logs } = await client
+                .from("fuel_logs")
+                .select("*")
+                .eq("user_id", user.id)
+                .gte("refill_date", `${currentMonth}-01`)
+                .order("refill_date", { ascending: false });
 
-            const vehicleActivityBody = document.getElementById('vehicleActivityBody');
-            vehicleActivityBody.innerHTML = filteredLogs.slice(0, 10).map((log, idx) => `
-                <tr data-id="${log.id}" style="animation-delay:${idx * 0.05}s">
-                    <td>${new Date(log.refill_date).toLocaleDateString('en-IN', {month:'short', day:'numeric', year:'numeric'})}</td>
-                    <td>${log.pump_name}</td>
-                    <td>${log.fuel_amount} ${log.vehicle_type === 'EV'? 'kWh' : 'L'}</td>
-                    <td>₹${log.total_cost}</td>
-                    <td>
-                        <button class="delete-btn" data-id="${log.id}">🗑️ Delete</button>
-                    </td>
-                </tr>
-            `).join('');
+            if (!logs || logs.length === 0) {
+                document.getElementById('emptyState').style.display = 'block';
+                document.getElementById('activityTable').style.display = 'none';
+                return;
+            }
+
+            allLogs = logs;
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('activityTable').style.display = 'table';
+
+            // ✅ जर bike select केला असेल तर फक्त bike चा data filter कर
+            let displayLogs = logs;
+            if (selectedVehicleType === 'bike') {
+                displayLogs = logs.filter(l => l.vehicle_type === 'bike');
+                document.querySelector('.header h1').textContent = 'Fuel Expense Dashboard - 🏍️ 2 Wheeler';
+            } else if (selectedVehicleType === 'car') {
+                displayLogs = logs.filter(l => l.vehicle_type === 'car');
+                document.querySelector('.header h1').textContent = 'Fuel Expense Dashboard - 🚗 4 Wheeler';
+            }
+
+            const totalFuel = displayLogs.reduce((sum, l) => sum + parseFloat(l.fuel_amount), 0);
+            const totalSpent = displayLogs.reduce((sum, l) => sum + parseFloat(l.total_cost), 0);
+            const avgPrice = totalFuel > 0 ? totalSpent / totalFuel : 0;
+            const lastRefill = displayLogs.length > 0 ? new Date(displayLogs[0].refill_date) : null;
+
+            animateValue('totalSpend', 0, totalSpent, 1200, '₹');
+            animateValue('avgEfficiency', 0, avgPrice, 1200, '₹/L');
+            document.getElementById('lastRefill').textContent = lastRefill ?
+                lastRefill.toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }) : '--';
+
+            const activityBody = document.getElementById('activityBody');
+            activityBody.innerHTML = displayLogs.slice(0, 10).map((log, idx) => {
+                const isHighlight = highlightStation &&
+                    log.pump_name === highlightStation &&
+                    log.total_cost == highlightAmount;
+                return `
+            <tr class="${isHighlight ? 'highlight-row' : ''}" data-id="${log.id}" style="animation-delay:${idx * 0.05}s">
+                <td>${new Date(log.refill_date).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
+                <td>${log.pump_name} <span style="color:var(--accent-blue);font-size:0.75rem;">(${log.vehicle_type === 'bike' ? '🏍️' : '🚗'})</span></td>
+                <td>${log.fuel_amount} L</td>
+                <td>₹${log.total_cost}</td>
+                <td>
+                    <button class="delete-btn" data-id="${log.id}">🗑️ Delete</button>
+                </td>
+            </tr>
+        `;
+            }).join('');
         }
+
+
 
         async function loadReports() {
             const { data: { user } } = await client.auth.getUser();
@@ -740,10 +765,10 @@
 
             const currentMonth = new Date().toISOString().slice(0, 7);
             const { data: logs } = await client
-         .from("fuel_logs")
-         .select("*")
-         .eq("user_id", user.id)
-         .gte("refill_date", `${currentMonth}-01`);
+                .from("fuel_logs")
+                .select("*")
+                .eq("user_id", user.id)
+                .gte("refill_date", `${currentMonth}-01`);
 
             if (!logs || logs.length === 0) {
                 document.getElementById('reportTotalFuel').textContent = '0 L';
@@ -765,7 +790,7 @@
                 stationCounts[l.pump_name] = (stationCounts[l.pump_name] || 0) + 1;
             });
             const topStation = Object.keys(stationCounts).reduce((a, b) =>
-                stationCounts[a] > stationCounts[b]? a : b
+                stationCounts[a] > stationCounts[b] ? a : b
             );
 
             const highest = Math.max(...logs.map(l => parseFloat(l.total_cost)));
@@ -804,7 +829,7 @@
 
             const grouped = {};
             logs.forEach(log => {
-                const date = new Date(log.refill_date).toLocaleDateString('en-IN', {month:'short'});
+                const date = new Date(log.refill_date).toLocaleDateString('en-IN', { month: 'short' });
                 grouped[date] = (grouped[date] || 0) + parseFloat(log.total_cost);
             });
 
@@ -843,7 +868,7 @@
                             borderColor: '#10B981',
                             borderWidth: 1,
                             callbacks: {
-                                label: function(context) {
+                                label: function (context) {
                                     return '₹' + context.parsed.y.toFixed(2);
                                 }
                             }
@@ -855,7 +880,7 @@
                             grid: { color: '#E5E7EB', drawBorder: false },
                             ticks: {
                                 color: '#6B7280',
-                                callback: function(value) {
+                                callback: function (value) {
                                     return '₹' + value;
                                 }
                             }
@@ -872,4 +897,5 @@
         loadDashboard();
     </script>
 </body>
+
 </html>
