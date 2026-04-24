@@ -54,7 +54,10 @@
     <!----------------------hero ----------------->
 
 
-
+<!-- AI Voice Search -->
+    <button class="voice-btn" id="voiceBtn" style="position:fixed;bottom:20px;right:20px;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#00F0FF,#00FFD1);border:2px solid #fff;cursor:pointer;z-index:9999;box-shadow:0 4px 20px rgba(0,240,255,0.5);" onclick="startVoice()">
+        🎤
+    </button>
 
     <section class="heroo-section container mint-glow">
         <div class="content">
@@ -803,6 +806,74 @@
             });
         }
 
+        function startVoice() {
+            const btn = document.getElementById('voiceBtn');
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert('Voice search is not supported in this browser. Use Chrome or Edge.');
+                return;
+            }
+
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'en-IN';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            btn.textContent = '🎙️';
+            btn.disabled = true;
+
+            recognition.onstart = () => {
+                btn.style.boxShadow = '0 0 20px rgba(0,255,192,0.8)';
+                btn.textContent = 'Listening…';
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript.toLowerCase();
+                processVoiceCommand(transcript);
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Voice recognition error:', event.error);
+                alert('Voice recognition error: ' + event.error);
+            };
+
+            recognition.onend = () => {
+                btn.style.boxShadow = '0 4px 20px rgba(0,240,255,0.5)';
+                btn.textContent = '🎤';
+                btn.disabled = false;
+            };
+
+            recognition.start();
+        }
+
+        function processVoiceCommand(text) {
+            const normalized = text.trim().toLowerCase();
+            console.log('Voice command:', normalized);
+
+            if (normalized.includes('petrol')) {
+                start('petrol');
+                return;
+            }
+            if (normalized.includes('diesel')) {
+                start('Diesel');
+                return;
+            }
+            if (normalized.includes('lpg')) {
+                start('LPG');
+                return;
+            }
+            if (normalized.includes('cng')) {
+                start('cng');
+                return;
+            }
+            if (normalized.includes('electric') || normalized.includes('ev')) {
+                start('EV');
+                return;
+            }
+
+            alert('Say petrol, diesel, LPG, CNG or electric charging to search stations.');
+        }
+
         /* ===== UI ===== */
         function showUI(stations, type) {
 
@@ -1118,7 +1189,7 @@
         }
 
         // Select date and load slots
-        async function selectDate(datteStr, el) {
+        async function selectDate(dateStr, el) {
             document.querySelectorAll('.date-item').forEach(d => d.classList.remove('active'));
             el.classList.add('active');
             selectedDate = dateStr;
@@ -1285,7 +1356,8 @@
                 // Reset selection
                 selectedDate = null;
                 selectedSlot = null;
-                await loadSlotsForDate(selectedDate);
+                document.getElementById("slotsGrid").innerHTML = '<p style="color:#666;text-align:center;grid-column:1/-1;">Select a date first</p>';
+                updateBookingSummary();
 
             } catch (err) {
                 console.error("Booking Error:", err);
