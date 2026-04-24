@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traffic Map - FuelFinder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="example.css">
+    <style>
+        :root {
+            --bg-primary: #F5F0E7;
+            --bg-secondary: #FCFAF7;
+            --bg-card: #FFFFFF;
+            --bg-soft: #F5EEE4;
+            --bg-hover: #FBF5EE;
+            --bg-input: #F4ECE2;
+            --text-primary: #2F2A27;
+            --text-secondary: #645B53;
+            --text-muted: #8B8379;
+            --accent: #B39267;
+            --accent-dark: #7F694B;
+            --accent-orange: #C8A97E;
+            --accent-green: #9C9485;
+            --accent-red: #D66F6F;
+            --accent-blue: #6EAFBD;
+            --border: #DDD1C4;
+            --border-light: #E9E2D9;
+            --shadow-sm: 0 12px 36px rgba(59, 44, 29, 0.08);
+            --shadow-md: 0 18px 48px rgba(59, 44, 29, 0.10);
+            --shadow-lg: 0 26px 66px rgba(59, 44, 29, 0.14);
+            --transition: all 0.35s ease;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: radial-gradient(circle at top left, rgba(200, 169, 126, 0.18), transparent 28%),
+                var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .nav-header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .nav-btn {
+            padding: 0.7rem 1.25rem;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .nav-btn:hover {
+            background: var(--bg-soft);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .nav-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        .traffic-section {
+            width: min(1180px, 100%);
+            margin: 0 auto;
+            padding: 2rem 1.2rem 3rem;
+        }
+
+        .traffic-header {
+            max-width: 720px;
+            margin-bottom: 2rem;
+            animation: floatIn 0.9s ease;
+        }
+
+        @keyframes floatIn {
+            from {
+                opacity: 0;
+                transform: translateY(-28px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .traffic-header h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 800;
+            margin-bottom: 0.85rem;
+            letter-spacing: -0.05em;
+            line-height: 1.05;
+            color: var(--text-primary);
+            position: relative;
+            display: inline-block;
+        }
+
+        .traffic-header h1::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -10px;
+            width: 80px;
+            height: 4px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, rgba(200, 169, 126, 1), rgba(200, 169, 126, 0.3));
+        }
+
+        .traffic-header p {
+            max-width: 620px;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.8;
+            margin-top: 0.85rem;
+        }
+
+        .search-container {
+            margin-bottom: 1.5rem;
+            animation: riseIn 0.75s ease;
+        }
+
+        .search-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .search-box {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .search-input {
+            flex: 1;
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1rem 1.25rem;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: var(--transition);
+            outline: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(200, 169, 126, 0.12);
+            background: #fff;
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .btn-search {
+            padding: 1rem 1.75rem;
+            border: none;
+            border-radius: 16px;
+            background: var(--text-primary);
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-search:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .map-container {
+            animation: riseIn 0.75s ease;
+        }
+
+        .map-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .map-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: radial-gradient(circle at top right, rgba(200, 169, 126, 0.12), transparent 32%);
+            z-index: 1;
+        }
+
+        #map {
+            width: 100%;
+            height: 65vh;
+            min-height: 450px;
+            display: block;
+        }
+
+        .map-controls {
+            padding: 1.75rem;
+            border-top: 1px solid var(--border);
+            position: relative;
+            z-index: 2;
+        }
+
+        .control-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+        }
+
+        .control-select {
+            width: 100%;
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 0.85rem 1rem;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23645B53' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 2.5rem;
+        }
+
+        .control-select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(200, 169, 126, 0.12);
+        }
+
+        .traffic-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .legend-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 6px;
+        }
+
+        .legend-dot.slow {
+            background: #D66F6F;
+        }
+
+        .legend-dot.medium {
+            background: #C8A97E;
+        }
+
+        .legend-dot.fast {
+            background: #6EAFBD;
+        }
+
+        .signal-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            cursor: default;
+            opacity: 0.4;
+            transition: var(--transition);
+        }
+
+        .signal-card.active {
+            opacity: 1;
+        }
+
+        .signal-card.active .signal-icon {
+            transform: scale(1.15);
+        }
+
+        .signal-card.active:hover {
+            transform: translateY(-4px) scale(1.1);
+        }
+
+        .signal-icon {
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+
+        .signal-label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+
+        .signal-card.high .signal-icon,
+        .signal-card.high .signal-label {
+            color: var(--accent-red);
+        }
+
+        .signal-card.medium .signal-icon,
+        .signal-card.medium .signal-label {
+            color: var(--accent-orange);
+        }
+
+        .signal-card.low .signal-icon,
+        .signal-card.low .signal-label {
+            color: var(--accent-blue);
+        }
+
+        .traffic-result {
+            display: none;
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .traffic-result.show {
+            display: block;
+            animation: riseIn 0.4s ease;
+        }
+
+        .result-header {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .result-status {
+            font-size: 1.5rem;
+            font-weight: 800;
+            padding: 0.5rem 0;
+        }
+
+        .result-status.high { color: var(--accent-red); }
+        .result-status.medium { color: var(--accent-orange); }
+        .result-status.low { color: var(--accent-blue); }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .toggle-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 52px;
+            height: 28px;
+            background: var(--bg-soft);
+            border: 2px solid var(--border);
+            border-radius: 999px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 18px;
+            height: 18px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .toggle-switch.active {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .toggle-switch.active::after {
+            left: 27px;
+            background: #fff;
+        }
+
+        @keyframes riseIn {
+            from {
+                opacity: 0;
+                transform: translateY(24px) scale(0.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .control-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            .btn-search {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .traffic-section {
+                padding: 1rem 0.9rem 1.6rem;
+            }
+
+            .traffic-header h1 {
+                font-size: 1.9rem;
+            }
+
+            .map-card {
+                border-radius: 20px;
+            }
+
+            .traffic-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="nav-header">
+        <div class="logo">FuelFinder</div>
+        <div class="nav-links">
+            <button class="nav-btn" onclick="window.location.href='index.html'">Stations</button>
+            <button class="nav-btn active">Traffic</button>
+            <button class="nav-btn" onclick="window.location.href='expense-dashboard.html'">Dashboard</button>
+            <button class="nav-btn" onclick="window.location.href='feedback.html'">Feedback</button>
+        </div>
+    </div>
+
+    <section class="traffic-section">
+        <div class="traffic-header">
+            <h1>Live Traffic Map</h1>
+            <p>Real-time traffic conditions to help plan your route to the nearest fuel station.</p>
+        </div>
+
+        <div class="search-container">
+            <div class="search-card">
+                <div class="search-box">
+                    <input type="text" class="search-input" id="searchInput"
+                        placeholder="Search for a location...">
+                    <button class="btn-search" id="searchBtn">Search</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="map-container">
+            <div class="map-card">
+                <div id="map"></div>
+
+                <div class="map-controls">
+                    <div class="control-grid">
+                        <div class="control-group">
+                            <label class="control-label">Map Type</label>
+                            <select class="control-select" id="mapTypeSelect">
+                                <option value="roadmap">Road Map</option>
+                                <option value="satellite">Satellite</option>
+                                <option value="hybrid">Hybrid</option>
+                                <option value="terrain">Terrain</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">Zoom Level</label>
+                            <select class="control-select" id="zoomLevel">
+                                <option value="10">City View</option>
+                                <option value="13" selected>Neighborhood</option>
+                                <option value="15">Street View</option>
+                                <option value="17">Building View</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">Traffic Layer</label>
+                            <div class="toggle-container">
+                                <span class="toggle-label" id="trafficLabel">Off</span>
+                                <div class="toggle-switch" id="trafficToggle" onclick="toggleTraffic()"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="traffic-legend">
+                        <div class="legend-item">
+                            <div class="legend-dot slow"></div>
+                            <span>Heavy Traffic</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-dot medium"></div>
+                            <span>Moderate Traffic</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-dot fast"></div>
+                            <span>Free Flow</span>
+                        </div>
+                    </div>
+
+                    <div class="traffic-stats">
+                        <div class="stat-card signal-card" id="signalHigh">
+                            <div class="signal-icon">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="6" y="2" width="4" height="8" rx="1"/>
+                                    <rect x="6" y="14" width="4" height="8" rx="1"/>
+                                    <path d="M14 6h4M14 10h4M14 14h4"/>
+                                </svg>
+                            </div>
+                            <div class="signal-label">High</div>
+                        </div>
+                        <div class="stat-card signal-card" id="signalMedium">
+                            <div class="signal-icon">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="6" y="2" width="4" height="8" rx="1"/>
+                                    <rect x="6" y="14" width="4" height="8" rx="1"/>
+                                    <path d="M14 10h4M14 14h4"/>
+                                </svg>
+                            </div>
+                            <div class="signal-label">Medium</div>
+                        </div>
+                        <div class="stat-card signal-card" id="signalLow">
+                            <div class="signal-icon">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="6" y="2" width="4" height="8" rx="1"/>
+                                    <rect x="6" y="14" width="4" height="8" rx="1"/>
+                                    <path d="M14 14h4"/>
+                                </svg>
+                            </div>
+                            <div class="signal-label">Low</div>
+                        </div>
+                    </div>
+                    
+                    <div class="traffic-result" id="trafficResult">
+                        <div class="result-header">Traffic Condition</div>
+                        <div class="result-status" id="resultStatus">Toggle traffic on to see status</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        let map;
+        let trafficLayer;
+        let trafficEnabled = false;
+
+        function initMap() {
+            const losAngeles = { lat: 34.04924594193164, lng: -118.24104309082031 };
+
+            map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 13,
+                center: losAngeles,
+                mapTypeControl: false,
+                streetViewControl: false,
+                fullscreenControl: true,
+                rotateControl: false,
+                styles: [
+                    {
+                        "featureType": "all",
+                        "elementType": "geometry.fill",
+                        "stylers": [{ "weight": "2.00" }]
+                    },
+                    {
+                        "featureType": "poi",
+                        "elementType": "all",
+                        "stylers": [{ "visibility": "off" }]
+                    },
+                    {
+                        "featureType": "transit",
+                        "elementType": "all",
+                        "stylers": [{ "visibility": "off" }]
+                    }
+                ]
+            });
+
+            trafficLayer = new google.maps.TrafficLayer();
+            updateTrafficInfo();
+
+            google.maps.event.addListener(map, 'idle', function () {
+                updateTrafficInfo();
+            });
+
+            google.maps.event.addListener(map, 'zoom_changed', function () {
+                updateTrafficInfo();
+            });
+        }
+
+        function updateTrafficInfo() {
+            const signalHigh = document.getElementById('signalHigh');
+            const signalMedium = document.getElementById('signalMedium');
+            const signalLow = document.getElementById('signalLow');
+            const resultCard = document.getElementById('trafficResult');
+            const resultStatus = document.getElementById('resultStatus');
+
+            signalHigh.classList.remove('active', 'high');
+            signalMedium.classList.remove('active', 'medium');
+            signalLow.classList.remove('active', 'low');
+            resultCard.classList.remove('show');
+            resultStatus.classList.remove('high', 'medium', 'low');
+
+            if (trafficEnabled) {
+                const zoom = map.getZoom();
+                let status, level;
+
+                if (zoom > 14) {
+                    status = 'Heavy Traffic';
+                    level = 'high';
+                    signalHigh.classList.add('active', 'high');
+                    resultStatus.textContent = 'Heavy Traffic';
+                } else if (zoom > 11) {
+                    status = 'Moderate Traffic';
+                    level = 'medium';
+                    signalMedium.classList.add('active', 'medium');
+                    resultStatus.textContent = 'Moderate Traffic';
+                } else {
+                    status = 'Free Flow';
+                    level = 'low';
+                    signalLow.classList.add('active', 'low');
+                    resultStatus.textContent = 'Free Flow';
+                }
+
+                resultStatus.classList.add(level);
+                resultCard.classList.add('show');
+            }
+        }
+
+        function toggleTraffic() {
+            const toggle = document.getElementById('trafficToggle');
+            const label = document.getElementById('trafficLabel');
+
+            trafficEnabled = !trafficEnabled;
+
+            if (trafficEnabled) {
+                trafficLayer.setMap(map);
+                toggle.classList.add('active');
+                label.textContent = 'On';
+            } else {
+                trafficLayer.setMap(null);
+                toggle.classList.remove('active');
+                label.textContent = 'Off';
+            }
+
+            updateTrafficInfo();
+        }
+
+        document.getElementById('mapTypeSelect').addEventListener('change', function () {
+            map.setMapTypeId(this.value);
+        });
+
+        document.getElementById('zoomLevel').addEventListener('change', function () {
+            map.setZoom(parseInt(this.value));
+        });
+
+        document.getElementById('searchBtn').addEventListener('click', function () {
+            const searchTerm = document.getElementById('searchInput').value;
+            if (searchTerm) {
+                const geocoder = new google.maps.Geocoder();
+                geocoder.geocode({ address: searchTerm }, function (results, status) {
+                    if (status === 'OK') {
+                        map.setCenter(results[0].geometry.location);
+                        map.setZoom(15);
+
+                        const marker = new google.maps.Marker({
+                            map: map,
+                            position: results[0].geometry.location,
+                            animation: google.maps.Animation.BOUNCE
+                        });
+
+                        setTimeout(function () {
+                            marker.setAnimation(null);
+                        }, 2000);
+                    } else {
+                        alert('Location not found. Please try another search term.');
+                    }
+                });
+            }
+        });
+
+        document.getElementById('searchInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                document.getElementById('searchBtn').click();
+            }
+        });
+
+        window.initMap = initMap;
+    </script>
+
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBqMdrW7skrATbpUj5S2lAYZzL1xBpzMUQ&callback=initMap">
+    </script>
+</body>
+
+</html>
